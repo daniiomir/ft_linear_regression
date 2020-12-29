@@ -110,3 +110,7 @@ def read_data(path):
             km = np.append(km, int(row['km']))
             price = np.append(price, int(row['price']))
     return km, price
+
+
+def standart_scale(data):
+    return (data - np.mean(data)) / np.std(data, ddof=1)
