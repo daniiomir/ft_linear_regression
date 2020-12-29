@@ -1,14 +1,16 @@
 import csv
+import random
 import pickle
 import argparse
 import numpy as np
+
 
 class LinearRegression:
     def __init__(self, learning_rate, loss):
         self.theta0 = 0.0
         self.theta1 = 0.0
-        self.tmp_theta0 = 0.0
-        self.tmp_theta1 = 0.0
+        self.tmp_theta0 = random.random()
+        self.tmp_theta1 = random.random()
         self.loss = loss
         self.lr = learning_rate
         if self.lr > 1:
@@ -27,7 +29,18 @@ class LinearRegression:
             quit()
 
     def fit(self, data, target):
-        pass
+        delta_loss = 1
+        while abs(delta_loss) < 0.001:
+            tmp_loss = self.loss(target, self.tmp_predict(data))
+            self.tmp_theta0 -= self.lr * (self.tmp_predict(data) - target).mean()
+            self.tmp_theta1 -= self.lr * ((self.tmp_predict(data) - target) * data).mean()
+            new_tmp_loss = self.loss(target, self.tmp_predict(data))
+            delta_loss = new_tmp_loss - tmp_loss
+            self.theta0 = self.tmp_theta0
+            self.theta1 = self.tmp_theta1
+
+    def tmp_predict(self, data):
+        return (self.tmp_theta1 * data) + self.tmp_theta0
 
     def predict(self, value):
         return (self.theta1 * float(value)) + self.theta0
@@ -81,10 +94,10 @@ def load_model(path):
 
 
 def read_data(path):
-    km = []
-    price = []
+    km = np.array([])
+    price = np.array([])
     with open(path, 'r') as f:
         for row in csv.DictReader(f):
-            km.append(row['km'])
-            price.append(row['price'])
+            np.append(km, row['km'])
+            np.append(price, row['price'])
     return km, price
