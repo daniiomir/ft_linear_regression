@@ -6,13 +6,15 @@ import numpy as np
 
 
 class LinearRegression:
-    def __init__(self, learning_rate, loss):
+    def __init__(self, learning_rate, loss, verbose):
         self.theta0 = 0.0
         self.theta1 = 0.0
         self.tmp_theta0 = random.random()
         self.tmp_theta1 = random.random()
         self.loss = loss
         self.lr = learning_rate
+        self.verbose = verbose
+
         if self.lr > 1:
             self.lr = 0.1
             print('Warning! Too big learning rate. It was set to 0.1.')
@@ -30,14 +32,20 @@ class LinearRegression:
 
     def fit(self, data, target):
         delta_loss = 1
-        while abs(delta_loss) < 0.001:
-            tmp_loss = self.loss(target, self.tmp_predict(data))
+        epoch = 1
+        tmp_loss = self.loss(target, self.tmp_predict(data))
+        while abs(delta_loss) > 0.000001:
             self.tmp_theta0 -= self.lr * (self.tmp_predict(data) - target).mean()
             self.tmp_theta1 -= self.lr * ((self.tmp_predict(data) - target) * data).mean()
             new_tmp_loss = self.loss(target, self.tmp_predict(data))
             delta_loss = new_tmp_loss - tmp_loss
+            tmp_loss = new_tmp_loss
+            print(f'Epoch: {epoch}, loss: {tmp_loss}')
             self.theta0 = self.tmp_theta0
             self.theta1 = self.tmp_theta1
+            epoch += 1
+        if self.verbose:
+            print(f'Fitted in {epoch}, theta0 - {self.theta0}, theta1 - {self.theta1}')
 
     def tmp_predict(self, data):
         return (self.tmp_theta1 * data) + self.tmp_theta0
@@ -70,6 +78,7 @@ def parse_args_fit():
     parser.add_argument('--loss', default='mse')
     parser.add_argument('--learning_rate', default=0.1, type=float)
     parser.add_argument('--save_path', default='model.pkl')
+    parser.add_argument('--verbose', default=1, type=int)
     args = parser.parse_args()
     return args.__dict__
 
@@ -98,6 +107,6 @@ def read_data(path):
     price = np.array([])
     with open(path, 'r') as f:
         for row in csv.DictReader(f):
-            np.append(km, row['km'])
-            np.append(price, row['price'])
+            km = np.append(km, int(row['km']))
+            price = np.append(price, int(row['price']))
     return km, price
