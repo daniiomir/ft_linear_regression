@@ -54,7 +54,7 @@ class LinearRegression:
         return (self.tmp_theta1 * data) + self.tmp_theta0
 
     def predict(self, value):
-        if isinstance(value, int):
+        if isinstance(value, (int, float)):
             if value > 0:
                 return int((self.theta1 * self.scale_data(value, False)) + self.theta0)
         print('Error! Wrong input value - {}\nValue should be number bigger than zero.'.format(value))
@@ -100,6 +100,14 @@ def parse_args_predict():
     parser = argparse.ArgumentParser()
     parser.add_argument('--load_path', default='model.pkl')
     parser.add_argument('--input_value', default=-1, type=int)
+    args = parser.parse_args()
+    return args.__dict__
+
+
+def parse_args_visualize():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--load_path', default='model.pkl')
+    parser.add_argument('--data_path', default='data.csv')
     args = parser.parse_args()
     return args.__dict__
 
