@@ -14,3 +14,4 @@ if __name__ == '__main__':
     plt.plot(reg_x, reg_y, color='red', label='Regression')
     plt.legend(loc='best')
     plt.savefig('plot.png')
+    print('Plot saved to plot.png')
